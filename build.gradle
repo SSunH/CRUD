@@ -21,6 +21,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'	
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	implementation 'javax.servlet:jstl'
 	implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
