@@ -21,6 +21,11 @@ public class SignupService {
 		signupEntity.setPassword(userDTO.getPassword());
 		signupEntity.setRole(userDTO.getRole());
 		signupRepository.save(signupEntity);
+	}
+
+
+	public int checkID(String id) {
+		return signupRepository.countById(id);
 	}	
 	 
 

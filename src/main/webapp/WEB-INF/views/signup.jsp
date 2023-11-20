@@ -8,30 +8,54 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <script>
-$(document).ready(function () {
-    $("#submitBtn").click(function () {
-    	$.ajax({
-    	    url: "/signgo",
-    	    type: "post",
-    	    contentType: "application/json", 
-    	    dataType: "json",
-    	    data: JSON.stringify({
-    	        id: $("#id").val(),
-    	        password: $("#password").val(),
-    	        email: $("#email").val(),
-    	        name: $("#text").val(),
-    	        role: $("#role").val()
-    	    }),
-    	    success: function (data) {
-    	        console.log(data);
-    	    },
-    	    error: function (request, status, error) {
-    	        console.error(error);
-    	    }
-    	});
+    // 아이디 중복체크
+    function checkId() {
+        $.ajax({
+            url: "/checkID",
+            type: "post",
+            cache: false,
+            dataType: "html",
+            data: {"id": $("#id").val()},
+            success: function (data) {
+                if (data == 0) {                
+                    alert("가입할 수 있는 ID입니다.");
+                    $("#submitBtn").attr("disabled", false);
 
+                } else {
+                    alert("이미 가입되어 있는 ID입니다.");
+                    $("#submitBtn").attr("disabled", true);
+
+
+                }
+            },
+            error: function (request, status, error) {
+                alert("문제가 발생하였습니다." + error);
+            }
+        });
+    }
+
+    $("#submitBtn").click(function () {
+        checkId();
+        $.ajax({
+            url: "/signgo",
+            type: "post",
+            contentType: "application/json", 
+            dataType: "json",
+            data: JSON.stringify({
+                id: $("#id").val(),
+                password: $("#password").val(),
+                email: $("#email").val(),
+                name: $("#text").val(),
+                role: $("#role").val()
+            }),
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (request, status, error) {
+                console.error(error);
+            }
+        });
     });
-});
 </script>
 
 <body>

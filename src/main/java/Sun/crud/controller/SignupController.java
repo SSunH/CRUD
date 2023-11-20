@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import Sun.crud.DTO.UserDTO;
 import Sun.crud.service.SignupService;
@@ -30,6 +32,12 @@ public class SignupController {
 		
         return new ResponseEntity<>("Signup successful", HttpStatus.OK);
 
-
 	}
+	
+	@PostMapping("/checkID")
+	@ResponseBody
+    public String checkID(@RequestParam("id") String id) {
+        int result = signupService.checkID(id);
+        return result + "";
+    }
 }
