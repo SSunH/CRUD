@@ -12,21 +12,14 @@ public class SignupService {
 	@Autowired
 	private SignupRepository signupRepository;
 	
-
-	public void insertUser(UserDTO userDTO) {
-		SignupEntity signupEntity = new SignupEntity();
-		signupEntity.setId(userDTO.getId());
-		signupEntity.setEmail(userDTO.getEmail());
-		signupEntity.setName(userDTO.getName());
-		signupEntity.setPassword(userDTO.getPassword());
-		signupEntity.setRole(userDTO.getRole());
-		signupRepository.save(signupEntity);
+	public void insertUser(SignupEntity signupEntity) {
+		signupRepository.save(signupEntity);		
+	}		 
+	public int checkID(String id) {
+		return signupRepository.countById(id);
 	}
 
 
-	public int checkID(String id) {
-		return signupRepository.countById(id);
-	}	
-	 
+	
 
 }

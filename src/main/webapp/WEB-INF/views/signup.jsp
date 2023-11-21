@@ -8,54 +8,68 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <script>
-    // 아이디 중복체크
-    function checkId() {
-        $.ajax({
-            url: "/checkID",
-            type: "post",
-            cache: false,
-            dataType: "html",
-            data: {"id": $("#id").val()},
-            success: function (data) {
-                if (data == 0) {                
-                    alert("가입할 수 있는 ID입니다.");
-                    $("#submitBtn").attr("disabled", false);
+var isIdAvailable = false; // 아이디 중복 확인 여부
 
-                } else {
-                    alert("이미 가입되어 있는 ID입니다.");
-                    $("#submitBtn").attr("disabled", true);
+//아이디 중복체크
+function checkId() {
+ $.ajax({
+     url: "/checkID",
+     type: "post",
+     cache: false,
+     dataType: "html",
+     data: {"id": $("#id").val()},
+     success: function (data) {
+         if (data == 0) {                
+             alert("가입할 수 있는 ID입니다.");
+             isIdAvailable = true; // 아이디 사용 가능
+             $("#submitBtn").attr("disabled", false);
+         } else {
+             alert("이미 가입되어 있는 ID입니다.");
+             isIdAvailable = false; // 아이디 사용 불가능
+             $("#submitBtn").attr("disabled", true);
+         }
+     },
+     error: function (request, status, error) {
+         alert("문제가 발생하였습니다." + error);
+     }
+ });
+}
+
+//회원가입
+function submitok() {
+ // 아이디 중복 확인 여부 확인
+ if (!isIdAvailable) {
+     alert("아이디 중복 확인을 해주세요.");
+     return;
+ }
+
+ // 회원가입
+ $.ajax({
+     type: "POST",
+     url: "/signgo",
+     contentType: "application/json; charset=utf-8",
+     data: JSON.stringify({
+         id: $("#id").val(),
+         password: $("#password").val(),
+         email: $("#email").val(),
+         name: $("#text").val(),
+         role: $("#role").val()
+     }),
+     success: function (data) {
+         // 성공했을 때 수행할 동작
+         alert("회원가입이 완료되었습니다.");
+         location.href = "/index";
+     },
+     error: function (error) {
+         // 실패했을 때 수행할 동작
+         alert("회원가입이 실패하였습니다.");
+         console.error(error);
+     }
+ });
+}
 
 
-                }
-            },
-            error: function (request, status, error) {
-                alert("문제가 발생하였습니다." + error);
-            }
-        });
-    }
 
-    $("#submitBtn").click(function () {
-        checkId();
-        $.ajax({
-            url: "/signgo",
-            type: "post",
-            contentType: "application/json", 
-            dataType: "json",
-            data: JSON.stringify({
-                id: $("#id").val(),
-                password: $("#password").val(),
-                email: $("#email").val(),
-                name: $("#text").val(),
-                role: $("#role").val()
-            }),
-            success: function (data) {
-                console.log(data);
-            },
-            error: function (request, status, error) {
-                console.error(error);
-            }
-        });
-    });
 </script>
 
 <body>
@@ -160,8 +174,9 @@
                         <button
                             class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                             type="submit"
-                            id=submitBtn
-                        >
+                            onclick="submitok()"
+                            id="submitBtn"
+	                        >
                             사용자 생성
                         </button>
                     </div>

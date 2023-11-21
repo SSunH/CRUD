@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import Sun.crud.DTO.UserDTO;
+import Sun.crud.entity.SignupEntity;
 import Sun.crud.service.SignupService;
 
 @Controller
@@ -24,18 +25,24 @@ public class SignupController {
 	public String SignupShow() {
 		return "signup";
 	}
-	
+	@ResponseBody
 	@PostMapping("/signgo")
 	public ResponseEntity<?> ok(@RequestBody UserDTO userDTO){
 		System.err.println(userDTO);
-		signupService.insertUser(userDTO);
+		SignupEntity signupEntity = new SignupEntity();
+		signupEntity.setId(userDTO.getId());
+		signupEntity.setEmail(userDTO.getEmail());
+		signupEntity.setName(userDTO.getName());
+		signupEntity.setPassword(userDTO.getPassword());
+		signupEntity.setRole(userDTO.getRole());
 		
-        return new ResponseEntity<>("Signup successful", HttpStatus.OK);
-
+		signupService.insertUser(signupEntity);
+		
+        return ResponseEntity.ok("ok");
 	}
 	
-	@PostMapping("/checkID")
 	@ResponseBody
+	@PostMapping("/checkID")
     public String checkID(@RequestParam("id") String id) {
         int result = signupService.checkID(id);
         return result + "";
