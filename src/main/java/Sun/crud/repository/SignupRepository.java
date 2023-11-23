@@ -10,6 +10,12 @@ public interface SignupRepository extends JpaRepository<SignupEntity, Long> {
 
 	int countById(String id);
 
+	SignupEntity findByIdAndPassword(String id, String password);	
+
+
+	
+	
+
 	
 
 }

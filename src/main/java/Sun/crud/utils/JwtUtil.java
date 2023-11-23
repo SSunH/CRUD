@@ -8,10 +8,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtUtil {
 	
-	public static String createJWT(String name, String secretKey, Long expiredMS) {		
+	public static String createJWT(String name, String role, String secretKey, Long expiredMS) {		
 		// 토큰에 저장할부분
 		Claims claims = Jwts.claims();
 		claims.put("name", name);
+		claims.put("role", role);
 		
 		return Jwts.builder()
 				.setClaims(claims) //토큰에 저장할 내용
