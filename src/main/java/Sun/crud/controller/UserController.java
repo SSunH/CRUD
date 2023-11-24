@@ -1,25 +1,20 @@
 package Sun.crud.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import Sun.crud.entity.SignupEntity;
-import Sun.crud.service.UserService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
+
 @Controller
-public class UserController {	
+public class UserController {
 	@Autowired
-	private UserService userService;
+	private TokenEndpoint tokenEndpoint;
 	
 	 @RequestMapping(value = "/logingo", method = RequestMethod.GET)
 	    public String login(){
@@ -33,6 +28,7 @@ public class UserController {
 	        // 로그인 성공 시 "/callback"으로 리다이렉트
 	        return "redirect:/callback";
 	    }
+
 	
 //	@ResponseBody
 //	@PostMapping("/loginok")

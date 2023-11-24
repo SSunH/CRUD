@@ -17,17 +17,15 @@ public class UserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		System.err.println(username);
+		System.err.println("여기도통과?");
 		SignupEntity userInfo = userRepository.findById(username);
+		System.err.println(userInfo);
 		
 		if (userInfo == null) {
             throw new UsernameNotFoundException("사용자가 없습니다" + username);
         }
 
-        return User.builder()
-                .username(userInfo.getId())
-                .password(userInfo.getPassword())                
-                .roles(userInfo.getRole())
-                .build();	
+		return userInfo;
         }	
 
 }
