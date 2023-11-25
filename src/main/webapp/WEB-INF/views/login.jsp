@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>login</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>

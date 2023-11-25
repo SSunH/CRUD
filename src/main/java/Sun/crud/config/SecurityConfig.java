@@ -21,6 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter  {
                 .loginPage("/logingo") // 커스텀 로그인 페이지 설정
                 .and()
                 .httpBasic(); // http 통신으로 basic auth를 사용 할 수 있다. (ex: Authorization: Basic bzFbdGfmZrptWY30YQ==)
+
     }
     
 

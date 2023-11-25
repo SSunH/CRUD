@@ -1,46 +1,94 @@
 package Sun.crud.controller;
 
-import kong.unirest.Unirest;
-import org.apache.commons.codec.binary.Base64;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-import Sun.crud.entity.OauthToken;
+import kong.unirest.json.JSONObject;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 
 @RestController
 public class OAuthController {
 
-    // 클라이언트가 구현해야하는 코드 - 발급 받은 코드로 토큰 발행
-    @RequestMapping("/callback")
-    public String code(@RequestParam String code){
+    private final RestTemplate restTemplate;
 
-        String cridentials = "clientId:secretKey";
-        // base 64로 인코딩 (basic auth 의 경우 base64로 인코딩 하여 보내야한다.)
-        String encodingCredentials = new String(
-                Base64.encodeBase64(cridentials.getBytes())
+    public OAuthController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }  
+    
+    @RequestMapping("/callback")
+    private ResponseEntity<String> requestToken(String code) {
+        String credentials = "clientId:secretKey";
+        String encodingCredentials = new String(Base64.getEncoder().encode(credentials.getBytes()));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Basic " + encodingCredentials);
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("code", code);
+        body.add("grant_type", "authorization_code");
+        body.add("redirect_uri", "http://localhost:8080/callback");
+
+        HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(body, headers);
+
+        return restTemplate.exchange(
+                "http://localhost:8080/oauth/token",
+                HttpMethod.POST,
+                tokenRequest,
+                String.class
         );
-        String requestCode = code;
-        OauthToken.request.accessToken request = new OauthToken.request.accessToken(){{
-            setCode(requestCode);
-            setGrant_type("authorization_code");
-            setRedirect_uri("http://localhost:8080/callback");
-        }};
-        
+    }
+    
+    
+    @RequestMapping("/ready")
+    public String processTokenResponse(@RequestParam String accessToken) {
         try {
-            // oauth 서버에 http 통신으로 토큰 발행
-            OauthToken.response oauthToken = Unirest.post("http://localhost:8080/oauth/token")
-                    .header("Authorization","Basic "+encodingCredentials)
-                    .fields(request.getMapData())
-                    .asObject(OauthToken.response.class).getBody();
-            System.err.println("토큰생성 완료");
-            System.err.println(oauthToken);
-            // 토큰 발급 성공 시 "로그인 성공" 응답
-            return "로그인 성공";
+//            // 확인: 토큰 요청 응답에서 JSON 형식의 문자열을 가져옴
+//        	String responseBody = tokenResponse.getBody();
+//           
+//
+//            // JSON 문자열을 JSONObject로 파싱
+//            JSONObject jsonToken = new JSONObject(responseBody);
+//
+//            // 여기서부터는 필요한 작업 수행
+//            String accessToken = jsonToken.getString("access_token");
+
+            // 리소스 서버에 요청
+            ResponseEntity<String> resourceResponse = restTemplate.exchange(
+                    "http://localhost:9090/main",
+                    HttpMethod.GET,
+                    createResourceRequest(accessToken),
+                    String.class
+            );
+
+            // 확인: 리소스 서버 응답에서 JSON 형식의 문자열을 가져옴
+            String resourceBody = resourceResponse.getBody();
+            System.out.println("Resource Server Response Body: " + resourceBody);
+            // 리소스 서버 응답 로깅
+
+            // 리소스 서버 응답을 클라이언트에게 반환
+            return "리소스 서버 응답: " + resourceBody;
         } catch (Exception e) {
-            // 토큰 발급 실패 시 에러 메시지를 반환
             e.printStackTrace();
-            return "토큰 발급 실패";
+            return "토큰 응답 처리 또는 리소스 서버 요청 실패: " + e.getMessage();
         }
     }
+
+    private HttpEntity<Void> createResourceRequest(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        System.err.println("Resource Request Headers: " + headers);
+        return new HttpEntity<>(headers);
+    }
 }
+
+
