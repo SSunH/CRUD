@@ -88,7 +88,70 @@ public class OAuthController {
 
         System.err.println("Resource Request Headers: " + headers);
         return new HttpEntity<>(headers);
-    }
+    }    
+    
+   
+//    @RestController
+//    public class OAuthController {
+//        private String ACCESS_TOKEN_COOKIE_NAME = "hello";
+//
+//        @RequestMapping("/callback")
+//        public String code(@RequestParam String code, HttpServletResponse response) {
+//            String cridentials = "clientId:secretKey";
+//            String encodingCredentials = new String(Base64.getEncoder().encode(cridentials.getBytes()));
+//            String requestCode = code;
+//
+//            try {
+//                HttpResponse<String> tokenResponse = Unirest.post("http://localhost:8080/oauth/token")
+//                        .header("Authorization", "Basic " + encodingCredentials)
+//                        .field("code", requestCode)
+//                        .field("grant_type", "authorization_code")
+//                        .field("redirect_uri", "http://localhost:8080/callback")
+//                        .asString();
+//
+//                // 확인: 토큰 요청 응답에서 JSON 형식의 문자열을 가져옴
+//                String responseBody = tokenResponse.getBody();
+//                System.out.println("Token Response Body: " + responseBody);
+//
+//                // JSON 문자열을 JSONObject로 파싱
+//                JSONObject jsonToken = new JSONObject(responseBody);
+//
+//                // 여기서부터는 필요한 작업 수행
+//                String accessToken = jsonToken.getString("access_token");
+//
+////                // 쿠키에 토큰을 저장
+////                Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken);
+////                accessTokenCookie.setMaxAge((int) jsonToken.getLong("expires_in"));
+////                accessTokenCookie.setPath("/");
+////                response.addCookie(accessTokenCookie);
+//                
+//             // 엑세스 토큰을 HTTP 헤더에 실어 보내 리소스 서버에 요청
+//                Map<String, String> headers = new HashMap<>();
+//                headers.put("Accept", "application/json");
+//                headers.put("Authorization", "Bearer " + accessToken);            
+//                HttpResponse<String> resourceResponse = Unirest.put("http://localhost:9090/main")
+//                        .headers(headers)
+//                        .asString();
+//                
+//                System.err.println(accessToken);
+//                
+//
+//                // 리소스 서버 응답을 클라이언트에게 반환
+//                return "리소스 서버 응답: " + resourceResponse.getBody();
+//
+//                // 성공적으로 처리되었음을 클라이언트에게 알림
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return "토큰 발급 및 리소스 서버 요청 실패: " + e.getMessage();
+//            }
+//        }
+//    }
+    //분리해야함.
+
+
+    
+    
 }
 
 
