@@ -8,28 +8,33 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <script>
-    function submitForm() {
-        var formData = {
-            id: $('#id').val(),
-            password: $('#password').val()
-        };
+function submitForm() {
+    var formData = {
+        id: $('#id').val(),
+        password: $('#password').val()
+    };
 
-        $.ajax({
-            type: 'POST',
-            url: '/loginok',
-            contentType: 'application/json;charset=UTF-8',
-            data: JSON.stringify(formData),
-            success: function (data) {
-                // Handle success response
-                console.log('Login successful');
-            },
-            error: function (error) {
-                // Handle error response
-                console.error('Login failed', error);
-            }
-        });
-    }
+    $.ajax({
+        type: 'POST',
+        url: '/login',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify(formData),
+        success: function (data, textStatus, jqXHR) {
+            console.log('로그인 성공');
+
+            // Display alert on successful login
+            alert('로그인 완료 되었습니다.');
+
+            // Redirect to "/index"
+            window.location.href = '/index';
+        },
+        error: function (error) {
+            console.error('로그인 실패', error);
+        }
+    });
+}
 </script>
+
 <body>
     <div class="h-screen overflow-hidden flex items-center justify-center">
         <div class="bg-white lg:w-6/12 md:7/12 w-6/12 shadow-3xl rounded-xl mx-auto border border-black">

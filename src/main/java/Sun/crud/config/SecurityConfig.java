@@ -1,44 +1,52 @@
 package Sun.crud.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import Sun.crud.utils.JwtRequestFilter;
 
 @EnableWebSecurity
-@Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter  {	
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers("/index","/loginok","/main","/signup","/checkID","/signgo").permitAll()
-                .anyRequest().authenticated()
-                .and()         
-            .logout()
-                .permitAll()
-            .and()
-            .csrf().disable(); // CSRF 비활성화
+public class SecurityConfig  {
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
-	
 
-	
-		
-	   //비밀번호 암호화
-	   @Bean
-	    public PasswordEncoder passwordEncoder() {
-	        return new BCryptPasswordEncoder();
-	    }
-	   
-	
-	 
-	   
-	   
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+    
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    	return  http.authorizeRequests()
+                .antMatchers("/index", "/login", "/main", "/signup", "/checkID", "/signgo", "/logout", "/cookie","/verify")
+                .permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout().disable()
+                .build();
+    }
 }
+
+ 
+   
+
+    
