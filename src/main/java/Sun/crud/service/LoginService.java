@@ -39,7 +39,7 @@ public ResponseCookie setRefeshCookie(String token) {
 		String encodedValue = Base64.getEncoder().encodeToString(value.getBytes());
 		ResponseCookie refresh_token = ResponseCookie
 			.from("Refresh_token", encodedValue)
-			.path("/auth")
+			.path("/")
 			.sameSite("none")
 			.secure(true)
 			.httpOnly(true)

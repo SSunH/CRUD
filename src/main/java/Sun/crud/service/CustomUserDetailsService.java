@@ -14,21 +14,20 @@ import org.springframework.stereotype.Service;
 import Sun.crud.entity.SignupEntity;
 import Sun.crud.repository.SignupRepository;
 
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-
-    @Autowired
-    private SignupRepository SignupRepository;
+	@Autowired
+	private SignupRepository signupRepository;    
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        SignupEntity signupEntity = SignupRepository.findById(username);
+        SignupEntity signupEntity = signupRepository.findById(username);
         if (signupEntity == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        // Status 정보를 GrantedAuthority로 변환
+       
+     // Status 정보를 GrantedAuthority로 변환
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(signupEntity.getRole()));
 
@@ -36,5 +35,5 @@ public class CustomUserDetailsService implements UserDetailsService {
 //        return new org.springframework.security.core.userdetails.User(memberEntity.getId(), memberEntity.getPassword(), new ArrayList<>());
         return new org.springframework.security.core.userdetails.User(signupEntity.getId(), signupEntity.getPassword(), authorities);
     }
+   }
 
-}

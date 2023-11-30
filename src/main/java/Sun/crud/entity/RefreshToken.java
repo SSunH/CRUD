@@ -9,12 +9,14 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name="refresh_token")
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,3 +24,4 @@ public class RefreshToken {
     private int id;
     private String value;
 }
+

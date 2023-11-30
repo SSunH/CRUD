@@ -58,7 +58,7 @@ function submitok() {
      success: function (data) {
          // 성공했을 때 수행할 동작
          alert("회원가입이 완료되었습니다.");
-         location.href = "/index";
+         location.href = "/login";
      },
      error: function (error) {
          // 실패했을 때 수행할 동작
@@ -164,8 +164,8 @@ function submitok() {
                                     name="role"
                                     class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    <option value="user">사용자</option>
-                                    <option value="admin">관리자</option>
+                                    <option value="USER">사용자</option>
+                                    <option value="ADMIN">관리자</option>
                                 </select>
                             </div>
                         </div>

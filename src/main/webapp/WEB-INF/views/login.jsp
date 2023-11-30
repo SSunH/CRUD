@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>login</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<meta charset="UTF-8">
+<title>login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <script>
 function submitForm() {
@@ -21,11 +21,7 @@ function submitForm() {
         data: JSON.stringify(formData),
         success: function (data, textStatus, jqXHR) {
             console.log('로그인 성공');
-
-            // Display alert on successful login
             alert('로그인 완료 되었습니다.');
-
-            // Redirect to "/index"
             window.location.href = '/index';
         },
         error: function (error) {
@@ -33,6 +29,8 @@ function submitForm() {
         }
     });
 }
+
+
 </script>
 
 <body>

@@ -1,9 +1,5 @@
 package Sun.crud.controller;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,12 +16,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import Sun.crud.DTO.LoginDTO;
@@ -42,8 +35,6 @@ import Sun.crud.utils.JwtUtil;
 public class UserController {
 	@Autowired
 	private LoginService loginService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private refreshTokenService refreshTokenService;
 	
@@ -83,6 +74,8 @@ public class UserController {
 	     accessTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키 만료 시간 (예: 7일)
 	     accessTokenCookie.setPath("/"); // 쿠키 경로 설정
 	     response.addCookie(accessTokenCookie);
+	     // HTTPONLY 쿠키 설정
+	        HttpHeaders headers = setRefreshCookie(tokens.get("refresh_token"));
 
 
 	     // 로그인 확인 로직
@@ -92,7 +85,7 @@ public class UserController {
 	         // 업데이트된 헤더와 함께 성공 상태의 ResponseEntity 반환	
 	    	 sendTokenToOtherServer(accessToken);
 
-	         return ResponseEntity.status(200).body(loginDTO.getAccess_token());
+	         return ResponseEntity.status(200).headers(headers).body(loginDTO.getAccess_token());
 	     } else {
 	         // 로그인 실패 처리
 	         return ResponseEntity.status(401).body("로그인 실패");
@@ -100,49 +93,26 @@ public class UserController {
 	 }
 
 		 
-	  private String getRefreshTokenFromCookies(HttpServletRequest request) {
-	        // 쿠키에서 리프레시 토큰 추출
-	        Cookie[] cookies = request.getCookies();
-	        System.err.println(cookies);
-	        String refreshToken = null;
-	        if (cookies != null) {
-	            for (Cookie cookie : cookies) {
-	                if ("accessToken".equals(cookie.getName())) {
-	                    refreshToken = new String(Base64.getDecoder().decode(cookie.getValue()));
-	                }
-	            }
-	        }
-	        return refreshToken;
-	    }	 	 
+	 
 
 	 
 	 @PostMapping("/logout")
 	 public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 	     // 쿠키 삭제
-	     Cookie cookie = new Cookie("accessToken", "");
-	     cookie.setMaxAge(0); // 또는 cookie.setMaxAge(-1);
-	     cookie.setPath("/");
-	     response.addCookie(cookie);
+	     removeCookie(response, "accessToken");
+	     removeCookie(response, "Refresh_token");
+
 	     // 로그아웃 성공 응답
 	     return new ResponseEntity<>("로그아웃 됩니다. <br>권한이 없습니다", HttpStatus.OK);
 	 }
 
-	 
-
-	 private String AccessTokenFromHeader(HttpServletRequest request) {
-		    // 요청의 Authorization 헤더를 가져옴
-		    String authorizationHeader = request.getHeader("Authorization");
-
-		    // Authorization 헤더가 존재하고 "Bearer "로 시작하는지 확인
-		    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-		        // 액세스 토큰을 추출하여 반환
-		        return authorizationHeader.substring(7);
-		    }
-
-		    // Authorization 헤더가 존재하지 않거나 형식이 맞지 않으면 null 반환
-		    return null;
-		}
-
+	 private void removeCookie(HttpServletResponse response, String cookieName) {
+	     Cookie cookie = new Cookie(cookieName, "");
+	     cookie.setMaxAge(0); 
+	     cookie.setPath("/");
+	     cookie.setHttpOnly(true); // httponly 설정 유지
+	     response.addCookie(cookie);
+	 } 
 	 
 	 private void sendTokenToOtherServer(String accessToken) {
 		    // 다른 서버의 엔드포인트
@@ -161,18 +131,11 @@ public class UserController {
 
 		    // RestTemplate을 미리 생성하여 재사용
 		    RestTemplate restTemplate = new RestTemplate();
+		    System.err.println("여기도?");
 		    
 		    // HTTP POST 요청
-		    ResponseEntity<String> responseEntity = restTemplate.postForEntity(otherServerUrl, requestEntity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.postForEntity(otherServerUrl, requestEntity, String.class);		
 
-		    // 응답 코드 등을 확인할 수 있는 로깅 추가
-		    HttpStatus statusCode = responseEntity.getStatusCode();
-		    if (statusCode.is2xxSuccessful()) {
-		        // 성공적인 응답 처리
-		    } else {
-		        // 오류 응답 처리
-		        // 여기에 오류 응답을 처리하는 로직을 추가
-		    }
 		}
 
 	 
@@ -194,6 +157,11 @@ public class UserController {
 	        // 토큰들을 맵에 저장
 	        Map<String, String> tokens = new HashMap<>();
 	        tokens.put("access_token", access_token);
+	        tokens.put("refresh_token", refresh_token);
+
+	        
+	        
+	        
 	        return tokens;
 	    }
 	 
@@ -206,7 +174,7 @@ public class UserController {
 	        return headers;
 	    }	
 
-	 
+	 	
 	
 
 }
