@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,6 @@ public static String SECRET_KEY;
 
 	@Autowired
 	private CustomUserDetailsService UserDetailsService;
-
 	
     @Value("${jwt.secretKey}")
     public void setSecretKey(String SECRET_KEY) {
@@ -39,33 +37,24 @@ public static String SECRET_KEY;
     private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
     
 	// 토큰 만료시간 설정
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 15 * 60 * 1000;		// 15분 15 * 60 * 1000;
-    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;	// 24시간, 24시간/일 * 60분/시간 * 60초/분 * 1000밀리초/초
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 30 * 60 * 1000;		
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;	
     
     // jti 생성
     public static String generateJti() {
         return UUID.randomUUID().toString();
-    }
-    
+    }    
     // ACCESS_TOKEN 생성
     public static String generateAccessToken(String id, String name, String role, String jti) {
-    	// 새로운 JWT를 생성하기 위한 Builder 객체를 초기화
         return Jwts.builder()
-        		// JWT의 sub (subject) 필드를 설정합니다. 이 필드는 토큰이 대상이 되는 주체(일반적으로 사용자)를 식별
                 .setSubject(id)
-                // 추가적인 claim으로 name을 설정. claim은 추가적인 데이터를 저장할 수 있는 key-value 쌍
                 .claim("name", name)
                 .claim("role", role)
-                // WT의 jti (JWT ID) 필드를 설정합니다. 이 필드는 토큰의 고유 식별자로 사용됩니다. 이를 통해 토큰이 한 번만 사용되도록 할 수 있으며, 랜덤한 UUID를 생성하여 이를 ID로 사용
-                .setId(jti)  // 랜덤한 UUID를 jti (JWT ID)로 사용
-                // JWT의 exp (expiration time) 필드를 설정	
+                .setId(jti)  
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
-                // WT를 서명하는 데 사용될 알고리즘과 시크릿 키를 설정
                 .signWith(SIGNATURE_ALGORITHM, SECRET_KEY)
-                // 최종적으로 생성된 JWT를 직렬화하여 문자열 형태로 반환
                 .compact();
-    }
-    
+    }    
     // REFRESH_TOKEN 생성
     public static String generateRefreshToken(String userId, String name, String role, String jti) {
         return Jwts.builder()
@@ -76,25 +65,16 @@ public static String SECRET_KEY;
             .signWith(SIGNATURE_ALGORITHM, SECRET_KEY)
             .compact();
     }
-    
- 	
-    // 오류 응답 전송
-    public void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-        response.sendError(status, message);
-    }
-    
-    
+    	    
  // 토큰의 유효성을 검사하는 메소드
     Boolean isTokenValid(String token) {
         if (isTokenExpired(token)) {
-            System.err.println("Token is expired");
+            System.err.println("토큰이 만료되었습니다.");
             return false; // 토큰이 만료되었을 경우 유효하지 않음
         }
 
-        // 여기에 추가적인 유효성 검사를 수행할 수 있습니다.
-
         System.out.println("토큰이 유효합니다.");
-        return true; // 토큰이 만료되지 않았고 추가적인 유효성 검사에 통과했을 경우 유효함
+        return true; 
     }
 	 // 토큰에서 모든 클레임을 추출하는 메서드
 	 private Claims extractAllClaims(String token) {
@@ -167,9 +147,7 @@ public static String SECRET_KEY;
                 = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         System.err.println(usernamePasswordAuthenticationToken);
         // 요청에 대한 세부 정보 설정 (예: IP 주소, 세션 ID 등)
-        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        
-        // SecurityContext에 Authentication 객체를 설정하는 역할. Authentication 객체는 Spring Security의 다른 부분에서 현재 사용자의 인증 정보를 접근하는데 사용
+        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));        
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         System.err.println("SecurityContext 안에 유저 정보 넣기 성공");        
 
@@ -180,8 +158,7 @@ public static String SECRET_KEY;
     	 Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     	 System.err.println(claims);
          return claims.get("sub", String.class);
-     }          
-	
+     }          	
 	
 }
 

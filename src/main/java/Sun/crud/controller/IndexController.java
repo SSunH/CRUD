@@ -16,11 +16,6 @@ public class IndexController {
 	      
 	    
 	    }
-	}
-	
-	@GetMapping("/cookie")
-	public String cookie(){
-		return "cookie";
-	}
+	}	
 
 }

@@ -20,7 +20,6 @@ function logout() {
 }
 
 function openBoard() {
-    // 새 창에서 "http://localhost:9090/board" 열기
     window.open('http://localhost:9090/board', '_blank');
 }
 </script>

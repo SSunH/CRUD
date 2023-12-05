@@ -2,8 +2,6 @@ package Sun.crud.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import Sun.crud.DTO.UserDTO;
 import Sun.crud.entity.SignupEntity;
 import Sun.crud.repository.SignupRepository;
 

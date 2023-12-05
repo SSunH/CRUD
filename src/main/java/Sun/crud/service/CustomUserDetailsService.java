@@ -30,9 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
      // Status 정보를 GrantedAuthority로 변환
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(signupEntity.getRole()));
-
-//        return new CustomUserDetails(memberEntity.getId(), memberEntity.getPassword(), memberEntity.getEmail(), new ArrayList<>());
-//        return new org.springframework.security.core.userdetails.User(memberEntity.getId(), memberEntity.getPassword(), new ArrayList<>());
         return new org.springframework.security.core.userdetails.User(signupEntity.getId(), signupEntity.getPassword(), authorities);
     }
    }

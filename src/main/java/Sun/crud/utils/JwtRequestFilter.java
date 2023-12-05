@@ -1,15 +1,12 @@
 package Sun.crud.utils;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -167,20 +164,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		    // 응답 코드 등을 확인할 수 있는 로깅 추가
 		    HttpStatus statusCode = responseEntity.getStatusCode();
 		    if (statusCode.is2xxSuccessful()) {
-		        // 성공적인 응답 처리
+		    	System.err.println("success");
 		    } else {
-		        // 오류 응답 처리
-		        // 여기에 오류 응답을 처리하는 로직을 추가
+		    	System.err.println("fail");
 		    }
-		}
-	
-//	  private String getRefreshTokenFromRequest(HttpServletRequest request) {
-//	        // 쿠키에서 리프레시 토큰 추출
-//	        Cookie[] cookies = request.getCookies();
-//	        return getRefreshTokenFromCookies(cookies);
-//	    }
-
-
+		}	
 
 	// 쿠키에서 refreshToken 반환
 	    public static String getRefreshTokenFromCookies(Cookie[] cookies) {
@@ -208,7 +196,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	        tokens.put("access_token", access_token);
 	        return tokens;
 	    }
-
  
 
 	private boolean isAllowedPath(HttpServletRequest request) {

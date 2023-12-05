@@ -3,8 +3,6 @@ package Sun.crud.service;
 import java.util.Base64;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +32,6 @@ public class LoginService {
     }
 	
 public ResponseCookie setRefeshCookie(String token) {
-		System.err.println("너는 리프레쉬? " + token);
 		String value = "Bearer " + token;
 		String encodedValue = Base64.getEncoder().encodeToString(value.getBytes());
 		ResponseCookie refresh_token = ResponseCookie
@@ -50,14 +47,9 @@ public ResponseCookie setRefeshCookie(String token) {
 		return refresh_token;
 	}    
 
-
-
 public SignupEntity findUserById(String id) {
 	return signupRepository.findUserById(id);
 }
-
-
-
 
 
 

@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,14 +34,11 @@ public class UserController {
 	@Autowired
 	private LoginService loginService;
 	@Autowired
-	private refreshTokenService refreshTokenService;
-	
-	
+	private refreshTokenService refreshTokenService;	
 	 @GetMapping("/login")
 	    public String login(){
 	        return "login";
-	    }
-	 
+	    }	 
 	 @PostMapping("/login")
 	 public ResponseEntity<String> loginPost(HttpServletRequest request, HttpServletResponse response,
 	         @RequestBody UserDTO userDTO) {
@@ -58,7 +53,6 @@ public class UserController {
 	     if (signupEntity == null) {
 	         return ResponseEntity.status(401).body("로그인 실패");
 	     }
-
 	     // 기존 토큰 생성 로직
 	     Map<String, String> tokens = generateTokens(signupEntity);
 	     System.err.println(tokens);
@@ -77,24 +71,18 @@ public class UserController {
 	     // HTTPONLY 쿠키 설정
 	        HttpHeaders headers = setRefreshCookie(tokens.get("refresh_token"));
 
-
 	     // 로그인 확인 로직
 	     signupEntity = loginService.checklogin(userDTO.getId(), userDTO.getPassword());
 	     System.err.println(signupEntity);
 	     if (signupEntity != null) {
 	         // 업데이트된 헤더와 함께 성공 상태의 ResponseEntity 반환	
 	    	 sendTokenToOtherServer(accessToken);
-
 	         return ResponseEntity.status(200).headers(headers).body(loginDTO.getAccess_token());
 	     } else {
 	         // 로그인 실패 처리
 	         return ResponseEntity.status(401).body("로그인 실패");
 	     }
 	 }
-
-		 
-	 
-
 	 
 	 @PostMapping("/logout")
 	 public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
@@ -134,11 +122,8 @@ public class UserController {
 		    System.err.println("여기도?");
 		    
 		    // HTTP POST 요청
-		    ResponseEntity<String> responseEntity = restTemplate.postForEntity(otherServerUrl, requestEntity, String.class);		
-
+		    ResponseEntity<String> responseEntity = restTemplate.postForEntity(otherServerUrl, requestEntity, String.class);
 		}
-
-	 
 	 
 	 private Map<String, String> generateTokens(SignupEntity member) {
 	        // jti 생성
@@ -157,14 +142,9 @@ public class UserController {
 	        // 토큰들을 맵에 저장
 	        Map<String, String> tokens = new HashMap<>();
 	        tokens.put("access_token", access_token);
-	        tokens.put("refresh_token", refresh_token);
-
-	        
-	        
-	        
+	        tokens.put("refresh_token", refresh_token);	        
 	        return tokens;
-	    }
-	 
+	    }	 
 	 private HttpHeaders setRefreshCookie(String refreshToken) {
 	        // HTTPONLY 쿠키 생성
 	        ResponseCookie HTTP_refresh_token = loginService.setRefeshCookie(refreshToken);
@@ -173,9 +153,6 @@ public class UserController {
 	        headers.add("Set-Cookie", HTTP_refresh_token.toString());
 	        return headers;
 	    }	
-
-	 	
-	
 
 }
 
